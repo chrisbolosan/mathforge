@@ -18,5 +18,13 @@ water_level = 0
 max_water_height = tank_height //2
 filling_speed = 1
 
+y = sp.Symbol('y')
+weight_density = 9800 #force in weight
+radius = 2
+volume_element = (sp.pi *radius**2) * sp.Symbol('dy')
+force = weight_density * volume_element
+distance =y
+work_integral = sp.integrate(force*distance, (y, 10, 12)) #bounds of integration
+work_done = work_integral.simplify()
 pygame.init()
 
