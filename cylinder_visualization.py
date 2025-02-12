@@ -67,4 +67,3 @@ image_placeholder.image( frame_image,caption="Water Tank Simulation", use_contai
 
 
 time.sleep(0.1)
-st.rerun()
