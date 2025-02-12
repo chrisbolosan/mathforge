@@ -17,6 +17,12 @@ GRAY = (200, 200, 200)
 
 tank_x, tank_y = 250, 100
 tank_width, tank_height = 100,200
+reservoir_y = 350
+pipe_width = 10
+pipe_x = tank_x + tank_width // 2 - pipe_width // 2
+pipe_height = tank_y - reservoir_y
+pump_x, pump_y = pipe_x - 15, tank_y + tank_height  # Position of the pump
+
 
 if "water_level" not in st.session_state:
     st.session_state.water_level = 0
@@ -56,8 +62,12 @@ image_placeholder = st.empty()
 def draw_ui():
     screen.fill(WHITE)
     
+    pygame.draw.rect(screen, GRAY, (pump_x, pump_y, 40, 100))
+    
+    pygame.draw.rect(screen, BLUE, (0, reservoir_y, WIDTH, HEIGHT - reservoir_y))
+    
     pygame.draw.rect(screen, BLACK, (tank_x, tank_y, tank_width, tank_height), 2)
-    #WATER
+    
     pygame.draw.rect(screen, BLUE, (tank_x, tank_y + (tank_height - st.session_state.water_level), tank_width, st.session_state.water_level))
 
     font = pygame.font.Font(None, 30)
@@ -95,11 +105,4 @@ frame_array = np.rot90(frame_array,-1)
 frame_array = np.fliplr(frame_array)
 frame_image = Image.fromarray(frame_array) 
 image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
-st.markdown("""
-    <style>
-    footer {visibility: hidden !important;}
-    .footer {visibility: hidden !important;}
-    .footer a {visibility: hidden !important;}
-    </style>
-""", unsafe_allow_html=True)
 
