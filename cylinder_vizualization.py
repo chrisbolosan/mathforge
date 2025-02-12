@@ -3,6 +3,7 @@ import sympy as sp
 import streamlit as st
 import numpy as np
 from PIL import Image
+import time
 
 pygame.init()
 
@@ -16,7 +17,8 @@ GRAY = (200, 200, 200)
 
 tank_x, tank_y = 250, 100
 tank_width, tank_height = 100,200
-water_level = 0
+if "water_level" not in st.session_state:
+    st.session_state.water_level = 0
 
 #some water physics here
 max_water_height = tank_height //2
@@ -32,8 +34,8 @@ work_integral = sp.integrate(force*distance, (y, 10, 12)) #bounds of integration
 work_done = work_integral.simplify()
 
 
-if water_level < max_water_height:
-    water_level += filling_speed
+if st.session_state.water_level < max_water_height:
+    st.session_state.water_level += filling_speed
 
 st.title("Water Tank Work Calculation")
 st.write("Simulating water filling in a tank while computing work done.")
@@ -44,7 +46,7 @@ def draw_ui():
     
     pygame.draw.rect(screen, BLACK, (tank_x, tank_y, tank_width, tank_height), 2)
     #WATER
-    pygame.draw.rect(screen, BLUE, (tank_x, tank_y + (tank_height - water_level), tank_width, water_level))
+    pygame.draw.rect(screen, BLUE, (tank_x, tank_y + (tank_height - st.session_state.water_level), tank_width, st.session_state.water_level))
 
     font = pygame.font.Font(None, 30)
     
@@ -60,3 +62,7 @@ frame_array = np.rot90(frame_array,-1)
 frame_array = np.fliplr(frame_array)
 frame_image = Image.fromarray(frame_array) 
 st.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
+
+
+time.sleep(0.1)
+st.rerun()
