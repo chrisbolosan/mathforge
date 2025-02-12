@@ -21,6 +21,15 @@ tank_width, tank_height = 100,200
 if "water_level" not in st.session_state:
     st.session_state.water_level = 0
 
+if "filling" not in st.session_state:
+    st.session_state.filling = False
+
+if st.button("Start Pumping"):
+    st.session_state.filling = True
+
+if st.button("Stop Pumping"):
+    st.session_state.filling = False
+
 #some water physics here
 max_water_height = tank_height //2
 filling_speed = 1
@@ -34,15 +43,11 @@ distance =y
 work_integral = sp.integrate(force*distance, (y, 10, 12)) #bounds of integration
 work_done = work_integral.simplify()
 
-image_placeholder = st.empty()
-
-if st.session_state.water_level < max_water_height:
-    st.session_state.water_level += filling_speed
-
 st.title("Water Tank Work Calculation")
 st.write("Simulating water filling in a tank while computing work done.")
 
-running = True
+image_placeholder = st.empty()
+    
 def draw_ui():
     screen.fill(WHITE)
     
@@ -58,12 +63,20 @@ def draw_ui():
     
     return screen
 
+while st.session_state.filling and st.session_state.water_level < max_water_height:
+    st.session_state.water_level += filling_speed
+    time.sleep(0.1)
+    draw_ui()
+    frame_array = pygame.surfarray.array3d(screen)  
+    frame_array = np.rot90(frame_array,-1) 
+    frame_array = np.fliplr(frame_array)
+    frame_image = Image.fromarray(frame_array) 
+    image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
+
+
 draw_ui()
 frame_array = pygame.surfarray.array3d(screen)  
 frame_array = np.rot90(frame_array,-1) 
 frame_array = np.fliplr(frame_array)
 frame_image = Image.fromarray(frame_array) 
 image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
-
-
-time.sleep(0.1)
