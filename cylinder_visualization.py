@@ -17,6 +17,7 @@ GRAY = (200, 200, 200)
 
 tank_x, tank_y = 250, 100
 tank_width, tank_height = 100,200
+
 if "water_level" not in st.session_state:
     st.session_state.water_level = 0
 
@@ -33,6 +34,7 @@ distance =y
 work_integral = sp.integrate(force*distance, (y, 10, 12)) #bounds of integration
 work_done = work_integral.simplify()
 
+image_placeholder = st.empty()
 
 if st.session_state.water_level < max_water_height:
     st.session_state.water_level += filling_speed
@@ -61,7 +63,7 @@ frame_array = pygame.surfarray.array3d(screen)
 frame_array = np.rot90(frame_array,-1) 
 frame_array = np.fliplr(frame_array)
 frame_image = Image.fromarray(frame_array) 
-st.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
+image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
 
 
 time.sleep(0.1)
