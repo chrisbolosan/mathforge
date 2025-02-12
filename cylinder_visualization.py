@@ -4,6 +4,7 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import time
+import math
 
 pygame.init()
 
@@ -56,23 +57,35 @@ work_integral = sp.integrate(force*distance, (y, 10, 12)) #bounds of integration
 work_done = work_integral.simplify()
 
 st.title("Water Tank Work Calculation")
-st.write("Simulating water filling in a tank while computing work done.")
+st.write("Simulating water filling in a tank.")
 
 image_placeholder = st.empty()
     
 if "water_particles" not in st.session_state:
     st.session_state.water_particles = []
 
-def draw_ui():
+def draw_ui(frame):
     screen.fill(WHITE)
     
-    pygame.draw.rect(screen, GRAY, (pump_x, pump_y, 40, 100))
+    # Simulated wavy water surface in the reservoir
+    wave_amplitude = 8
+    wave_frequency = 0.1
+    reservoir_water_level = reservoir_y + 30
+    wave_points = [
+      (x, reservoir_water_level + math.sin(x * wave_frequency + frame * 0.2) * wave_amplitude)
+        for x in range(0, WIDTH, 5)  # **Cover full width with smaller gaps**
+    ]
+    pygame.draw.polygon(screen, BLUE, [(0, HEIGHT), *wave_points, (WIDTH, HEIGHT)])
+
+
     
-    pygame.draw.rect(screen, BLUE, (0, reservoir_y, WIDTH, HEIGHT - reservoir_y))
+    pygame.draw.rect(screen, GRAY, (pump_x, pump_y, 40, 90))
+    
+    # pygame.draw.rect(screen, BLUE, (0, reservoir_y, WIDTH, HEIGHT - reservoir_y))
     
     pygame.draw.rect(screen, BLACK, (tank_x, tank_y, tank_width, tank_height), 2)
 
-    pygame.draw.rect(screen, BLACK, (pipe_x, tank_y + tank_height, pipe_width, reservoir_y - tank_y - tank_height), 2)
+    pygame.draw.rect(screen, BLACK, (pipe_x, tank_y + tank_height +30, pipe_width, reservoir_y - tank_y - tank_height+10),2)
 
     pygame.draw.rect(screen, BLUE, (tank_x, tank_y + (tank_height - st.session_state.water_level), tank_width, st.session_state.water_level))
 
@@ -92,28 +105,30 @@ def draw_ui():
 
     return screen
 
-
+frame_count = 0
 while st.session_state.filling and st.session_state.water_level < max_water_height:
     st.session_state.water_level += filling_speed
     time.sleep(0.1)
-    draw_ui()
+    draw_ui(frame_count)
     
     frame_array = pygame.surfarray.array3d(screen)  
     frame_array = np.rot90(frame_array,-1) 
     frame_array = np.fliplr(frame_array)
     frame_image = Image.fromarray(frame_array) 
     image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
+    
+    frame_count += 1 
     time.sleep(0.1)
 
 if not st.session_state.filling or st.session_state.water_level >= max_water_height:
-    draw_ui()
+    draw_ui(frame_count)
     frame_array = pygame.surfarray.array3d(screen)  
     frame_array = np.rot90(frame_array,-1) 
     frame_array = np.fliplr(frame_array)
     frame_image = Image.fromarray(frame_array) 
     image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
 
-draw_ui()
+draw_ui(frame_count)
 frame_array = pygame.surfarray.array3d(screen)  
 frame_array = np.rot90(frame_array,-1) 
 frame_array = np.fliplr(frame_array)
