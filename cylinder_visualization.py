@@ -6,9 +6,6 @@ from PIL import Image
 import time
 
 pygame.init()
-pygame.mixer.init()
-
-pygame.mixer.music.load('water.mp3')
 
 WIDTH, HEIGHT = 600, 500
 screen = pygame.Surface((WIDTH, HEIGHT))
@@ -32,20 +29,18 @@ if "water_level" not in st.session_state:
 
 if "filling" not in st.session_state:
     st.session_state.filling = False
-    pygame.mixer.music.stop()
+    
 if st.button("Start Pumping"):
     st.session_state.filling = True
-    pygame.mixer.music.play(-1)
 
 if st.button("Stop Pumping"):
     st.session_state.filling = False
-    pygame.mixer.music.stop()
+    
 else:
     reset_pump_button = st.button("Reset Tank")
     if reset_pump_button:
         st.session_state.water_level = 0
         st.session_state.filling = True
-        pygame.mixer.music.play(-1)
 
 #some water physics here
 max_water_height = tank_height //2
@@ -112,7 +107,6 @@ while st.session_state.filling and st.session_state.water_level < max_water_heig
 
 if not st.session_state.filling or st.session_state.water_level >= max_water_height:
     draw_ui()
-    pygame.mixer.music.stop()
     frame_array = pygame.surfarray.array3d(screen)  
     frame_array = np.rot90(frame_array,-1) 
     frame_array = np.fliplr(frame_array)
