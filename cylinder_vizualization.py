@@ -41,20 +41,20 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-pygame.draw.rect(screen, BLACK, (tank_x, tank_y, tank_width, tank_height), 2)
-#WATER
-pygame.draw.rect(screen, BLUE, (tank_x, tank_y + (tank_height - water_level), tank_width, water_level))
+    pygame.draw.rect(screen, BLACK, (tank_x, tank_y, tank_width, tank_height), 2)
+    #WATER
+    pygame.draw.rect(screen, BLUE, (tank_x, tank_y + (tank_height - water_level), tank_width, water_level))
 
-#calculsations display
-work_text = font.render(f"Work Done: {work_done} N-m", True, BLACK)
-screen.blit(work_text, (50, 50))
+    #calculsations display
+    work_text = font.render(f"Work Done: {work_done} N-m", True, BLACK)
+    screen.blit(work_text, (50, 50))
 
 
-if water_level < max_water_height:
-    water_level += filling_speed
+    if water_level < max_water_height:
+        water_level += filling_speed
     
-pygame.display.flip()
-pygame.time.delay(100)
+    pygame.display.flip()
+    pygame.time.delay(100)
 
 
 pygame.quit()
