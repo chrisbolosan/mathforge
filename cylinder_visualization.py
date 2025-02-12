@@ -80,3 +80,8 @@ frame_array = np.rot90(frame_array,-1)
 frame_array = np.fliplr(frame_array)
 frame_image = Image.fromarray(frame_array) 
 image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
+st.markdown("""
+<style>
+footer {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
