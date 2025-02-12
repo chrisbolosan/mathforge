@@ -29,6 +29,11 @@ if st.button("Start Pumping"):
 
 if st.button("Stop Pumping"):
     st.session_state.filling = False
+else:
+    reset_pump_button = st.button("Reset Tank")
+    if reset_pump_button:
+        st.session_state.water_level = 0
+        st.session_state.filling = True
 
 #some water physics here
 max_water_height = tank_height //2
@@ -67,12 +72,22 @@ while st.session_state.filling and st.session_state.water_level < max_water_heig
     st.session_state.water_level += filling_speed
     time.sleep(0.1)
     draw_ui()
+    
     frame_array = pygame.surfarray.array3d(screen)  
     frame_array = np.rot90(frame_array,-1) 
     frame_array = np.fliplr(frame_array)
     frame_image = Image.fromarray(frame_array) 
     image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
+    time.sleep(0.1)
 
+if not st.session_state.filling and st.session_state.water_level >= max_water_height:
+    st.session_state.water_level = 0
+    draw_ui()
+    frame_array = pygame.surfarray.array3d(screen)  
+    frame_array = np.rot90(frame_array,-1) 
+    frame_array = np.fliplr(frame_array)
+    frame_image = Image.fromarray(frame_array) 
+    image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
 
 draw_ui()
 frame_array = pygame.surfarray.array3d(screen)  
@@ -81,7 +96,10 @@ frame_array = np.fliplr(frame_array)
 frame_image = Image.fromarray(frame_array) 
 image_placeholder.image( frame_image,caption="Water Tank Simulation", use_container_width=True)
 st.markdown("""
-<style>
-footer {visibility: hidden;}
-</style>
+    <style>
+    footer {visibility: hidden !important;}
+    .footer {visibility: hidden !important;}
+    .footer a {visibility: hidden !important;}
+    </style>
 """, unsafe_allow_html=True)
+
