@@ -59,6 +59,9 @@ st.write("Simulating water filling in a tank while computing work done.")
 
 image_placeholder = st.empty()
     
+if "water_particles" not in st.session_state:
+    st.session_state.water_particles = []
+
 def draw_ui():
     screen.fill(WHITE)
     
@@ -67,16 +70,27 @@ def draw_ui():
     pygame.draw.rect(screen, BLUE, (0, reservoir_y, WIDTH, HEIGHT - reservoir_y))
     
     pygame.draw.rect(screen, BLACK, (tank_x, tank_y, tank_width, tank_height), 2)
-    
+
+    pygame.draw.rect(screen, BLACK, (pipe_x, tank_y + tank_height, pipe_width, reservoir_y - tank_y - tank_height), 2)
+
     pygame.draw.rect(screen, BLUE, (tank_x, tank_y + (tank_height - st.session_state.water_level), tank_width, st.session_state.water_level))
 
+    if st.session_state.filling:
+        st.session_state.water_particles.append([pipe_x + pipe_width // 2, reservoir_y])
+
+    for particle in st.session_state.water_particles:
+        particle[1] -= 6.5
+        if particle[1] < pump_y:
+            st.session_state.water_particles.remove(particle)
+        else:
+            pygame.draw.circle(screen, BLUE, (particle[0], particle[1]), 3)
+
     font = pygame.font.Font(None, 30)
-    
-    #calculsations display
     work_text = font.render(f"Work Done: {work_done} N-m", True, BLACK)
     screen.blit(work_text, (50, 50))
-    
+
     return screen
+
 
 while st.session_state.filling and st.session_state.water_level < max_water_height:
     st.session_state.water_level += filling_speed
