@@ -16,13 +16,13 @@ BLUE = (0, 100, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 
-tank_x, tank_y = 250, 100
-tank_width, tank_height = 100,200
-reservoir_y = 350
-pipe_width = 10
-pipe_x = tank_x + tank_width // 2 - pipe_width // 2
-pipe_height = tank_y - reservoir_y
-pump_x, pump_y = pipe_x - 15, tank_y + tank_height  # Position of the pump
+TANK_X, TANK_Y = 250, 100
+TANK_WIDTH, TANK_HEIGHT = 100,200
+RESERVOIR_Y = 350
+PIPE_WIDTH = 10
+PIPE_X = TANK_X + TANK_WIDTH // 2 - PIPE_WIDTH // 2
+PIPE_HEIGHT = TANK_Y - RESERVOIR_Y
+PUMP_X, PUMP_Y = PIPE_X - 15, TANK_Y + TANK_HEIGHT  # Position of the pump
 
 
 if "water_level" not in st.session_state:
@@ -43,18 +43,17 @@ else:
         st.session_state.water_level = 0
         st.session_state.filling = True
 
-#some water physics here
-max_water_height = tank_height //2
-filling_speed = 1
+MAX_WATER_HEIGHT = TANK_HEIGHT //2
+FILLING_SPEED = 1
 
 y = sp.Symbol('y')
-weight_density = 9800 #force in weight
-radius = 2
-volume_element = (sp.pi *radius**2) * sp.Symbol('dy')
-force = weight_density * volume_element
-distance =y
-work_integral = sp.integrate(force*distance, (y, 10, 12)) #bounds of integration
-work_done = work_integral.simplify()
+WEIGHT_DENSITY = 9800
+RADIUS = 2
+VOLUME_ELEMENT = (sp.pi *RADIUS**2) * sp.Symbol('dy')
+FORCE = WEIGHT_DENSITY * VOLUME_ELEMENT
+DISTANCE =y
+WORK_INTEGRAL = sp.integrate(FORCE*DISTANCE, (y, 10, 12)) 
+WORK_DONE = WORK_INTEGRAL.simplify()
 
 st.title("Water Tank Work Calculation")
 st.write("Simulating water filling in a tank.")
@@ -67,47 +66,39 @@ if "water_particles" not in st.session_state:
 def draw_ui(frame):
     screen.fill(WHITE)
     
-    # Simulated wavy water surface in the reservoir
-    wave_amplitude = 8
-    wave_frequency = 0.1
-    reservoir_water_level = reservoir_y + 30
-    wave_points = [
-      (x, reservoir_water_level + math.sin(x * wave_frequency + frame * 0.2) * wave_amplitude)
-        for x in range(0, WIDTH, 5)  # **Cover full width with smaller gaps**
+    WAVE_AMPLITUDE = 8
+    WAVE_FREQUENCY = 0.1
+    RESERVOIR_WATER_LEVEL = RESERVOIR_Y + 30
+    WAVE_POINTS = [
+      (x, RESERVOIR_WATER_LEVEL + math.sin(x * WAVE_FREQUENCY + frame * 0.2) * WAVE_AMPLITUDE)
+        for x in range(0, WIDTH, 5) 
     ]
-    pygame.draw.polygon(screen, BLUE, [(0, HEIGHT), *wave_points, (WIDTH, HEIGHT)])
-
-
-    
-    pygame.draw.rect(screen, GRAY, (pump_x, pump_y, 40, 90))
-    
-    # pygame.draw.rect(screen, BLUE, (0, reservoir_y, WIDTH, HEIGHT - reservoir_y))
-    
-    pygame.draw.rect(screen, BLACK, (tank_x, tank_y, tank_width, tank_height), 2)
-
-    pygame.draw.rect(screen, BLACK, (pipe_x, tank_y + tank_height +30, pipe_width, reservoir_y - tank_y - tank_height+10),2)
-
-    pygame.draw.rect(screen, BLUE, (tank_x, tank_y + (tank_height - st.session_state.water_level), tank_width, st.session_state.water_level))
+    pygame.draw.polygon(screen, BLUE, [(0, HEIGHT), *WAVE_POINTS, (WIDTH, HEIGHT)])
+    pygame.draw.rect(screen, GRAY, (PUMP_X, PUMP_Y, 40, 90))    
+    pygame.draw.rect(screen, BLACK, (TANK_X, TANK_Y, TANK_WIDTH, TANK_HEIGHT), 2)
+    pygame.draw.rect(screen, BLACK, (PIPE_X, TANK_Y + TANK_HEIGHT +30, PIPE_WIDTH, RESERVOIR_Y - TANK_Y - TANK_HEIGHT+10),2)
+    pygame.draw.rect(screen, BLUE, (TANK_X, TANK_Y + (TANK_HEIGHT - st.session_state.water_level), TANK_WIDTH, st.session_state.water_level))
 
     if st.session_state.filling:
-        st.session_state.water_particles.append([pipe_x + pipe_width // 2, reservoir_y])
+        st.session_state.water_particles.append([PIPE_X + PIPE_WIDTH // 2, RESERVOIR_Y])
 
     for particle in st.session_state.water_particles:
         particle[1] -= 6.5
-        if particle[1] < pump_y:
+        if particle[1] < PUMP_Y:
             st.session_state.water_particles.remove(particle)
         else:
             pygame.draw.circle(screen, BLUE, (particle[0], particle[1]), 3)
 
-    font = pygame.font.Font(None, 30)
-    work_text = font.render(f"Work Done: {work_done} N-m", True, BLACK)
-    screen.blit(work_text, (50, 50))
+    FONT = pygame.font.Font(None, 30)
+    WORK_TEXT = FONT.render(f"Work Done: {WORK_DONE} N-m", True, BLACK)
+    screen.blit(WORK_TEXT, (50, 50))
 
     return screen
 
 frame_count = 0
-while st.session_state.filling and st.session_state.water_level < max_water_height:
-    st.session_state.water_level += filling_speed
+
+while st.session_state.filling and st.session_state.water_level < MAX_WATER_HEIGHT:
+    st.session_state.water_level += FILLING_SPEED
     time.sleep(0.1)
     draw_ui(frame_count)
     
@@ -120,7 +111,7 @@ while st.session_state.filling and st.session_state.water_level < max_water_heig
     frame_count += 1 
     time.sleep(0.1)
 
-if not st.session_state.filling or st.session_state.water_level >= max_water_height:
+if not st.session_state.filling or st.session_state.water_level >= MAX_WATER_HEIGHT:
     draw_ui(frame_count)
     frame_array = pygame.surfarray.array3d(screen)  
     frame_array = np.rot90(frame_array,-1) 
